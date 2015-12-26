@@ -50,6 +50,7 @@ public class ChangePhoto {
     }
 
     public void changePhoto() {
-        setPhoto((currentPhotoIndex + 1) % photoList.size());
+        if (!photoList.isEmpty())
+            setPhoto((currentPhotoIndex + 1) % photoList.size());
     }
 }

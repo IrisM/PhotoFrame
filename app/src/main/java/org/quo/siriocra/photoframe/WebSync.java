@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,13 @@ public class WebSync {
             oldRevision = 0;
         }
         String relativeURL = "/revision";
-        byte[] allData = sendGetRequest(relativeURL);
+        byte[] allData;
+        try {
+            allData = sendGetRequest(relativeURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         Log.d("checkRevision", String.valueOf(allData.length));
         InputStream in = new ByteArrayInputStream(allData);
         JsonReader reader = null;
@@ -73,7 +80,13 @@ public class WebSync {
             oldRevision = 0;
         }
         String relativeURL = "/diff/" + oldRevision;
-        byte[] allData = sendGetRequest(relativeURL);
+        byte[] allData;
+        try {
+            allData = sendGetRequest(relativeURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
         Log.d("getNewPhotos", String.valueOf(allData.length));
         InputStream in = new ByteArrayInputStream(allData);
         JsonReader reader = null;
@@ -103,15 +116,15 @@ public class WebSync {
             // Making it a list of Photos
             if (albums == null)
                 return null;
-            if (newRevision != null) {
-                changePhoto.currentRevision = newRevision;
-            }
             for (Album album : albums) {
                 for (String photoName : album.photoNames) {
                     photos.add(getPhoto(album.id, photoName));
                 }
             }
-        } catch (IOException e) {
+            if (newRevision != null) {
+                changePhoto.currentRevision = newRevision;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
@@ -163,19 +176,18 @@ public class WebSync {
 
     }
 
-    private Photo getPhoto(String directory, String photoName) {
+    private Photo getPhoto(String directory, String photoName) throws Exception {
         String relativeURL = "/photo/" + photoName;
         byte[] allData = sendGetRequest(relativeURL);
         Log.d("getPhoto", String.valueOf(allData.length));
         InputStream in = new ByteArrayInputStream(allData);
-        //TODO: check it
         Bitmap image = BitmapFactory.decodeStream(in);
         Log.d("getPhoto", "width: " + image.getWidth() + " height: " + image.getHeight());
         String path = StorageManager.saveToInternalStorage(activity, directory, photoName, image);
         return new Photo(path, photoName);
     }
 
-    private byte[] sendGetRequest(String relativeURL) {
+    private byte[] sendGetRequest(String relativeURL) throws Exception {
         HttpURLConnection connection = null;
         try {
             //Create connection
@@ -194,9 +206,6 @@ public class WebSync {
 
             Log.d("sendGetRequest", url.toString() + " " + response.length);
             return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         } finally {
             if (connection != null) {
                 connection.disconnect();
