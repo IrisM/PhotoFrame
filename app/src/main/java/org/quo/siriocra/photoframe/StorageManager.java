@@ -1,18 +1,14 @@
 package org.quo.siriocra.photoframe;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +22,9 @@ public class StorageManager {
     // Returns ablsolute path of stored image
     static public String saveToInternalStorage(Activity activity, String path, String name, Bitmap bitmapImage) {
         File upper_directory = activity.getFilesDir();
-        if (!upper_directory.isDirectory())
+        if (!upper_directory.isDirectory()) {
             return null;
+        }
         File directory = new File(upper_directory, PHOTO_DIRECTORY + '/' + path);
         directory.mkdirs();
 
@@ -53,8 +50,9 @@ public class StorageManager {
     {
         try {
             File upper_directory = activity.getFilesDir();
-            if (!upper_directory.isDirectory())
+            if (!upper_directory.isDirectory()) {
                 return null;
+            }
             File directory = new File(upper_directory, PHOTO_DIRECTORY + '/' + path);
             directory.mkdirs();
             File f = new File(directory, name);
@@ -69,8 +67,9 @@ public class StorageManager {
     {
         List<Photo> photos = new ArrayList<>();
         File upper_directory = activity.getFilesDir();
-        if (!upper_directory.isDirectory())
+        if (!upper_directory.isDirectory()) {
             return photos;
+        }
         Log.d("loadPhotos", upper_directory.getAbsolutePath());
         File directory = new File(upper_directory, PHOTO_DIRECTORY);
         directory.mkdirs();

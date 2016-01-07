@@ -14,6 +14,7 @@ import android.view.View;
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenActivity extends AppCompatActivity {
+    public static String VERSION = "1.1";
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -116,7 +117,6 @@ public class FullscreenActivity extends AppCompatActivity {
                 changePhoto.changePhoto();
             }
         });
-
     }
 
     @Override
@@ -127,6 +127,10 @@ public class FullscreenActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+        AutoUpdateApp autoUpdate = new AutoUpdateApp(this);
+        String url = "http://grand.citxx.ru/application/";
+        String path = autoUpdate.doInBackground(url + "version", url + "PhotoFrame.apk");
+        autoUpdate.onPostExecute(path);
     }
 
     private void toggle() {

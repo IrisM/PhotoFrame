@@ -114,8 +114,9 @@ public class WebSync {
             reader.endObject();
 
             // Making it a list of Photos
-            if (albums == null)
+            if (albums == null) {
                 return null;
+            }
             for (Album album : albums) {
                 for (String photoName : album.photoNames) {
                     photos.add(getPhoto(album.id, photoName));

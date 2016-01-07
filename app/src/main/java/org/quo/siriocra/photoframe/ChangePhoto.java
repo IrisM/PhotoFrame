@@ -22,10 +22,11 @@ public class ChangePhoto {
         webSync = null;
         currentPhotoIndex = null;
         currentRevision = null;
-        photoList = null;
-        getPhotoList();
-        if (!photoList.isEmpty())
+        photoList = getOldPhotos();
+        if (!photoList.isEmpty()) {
             setPhoto(0);
+        }
+        getPhotoList();
     }
 
     private void getPhotoList() {
@@ -50,7 +51,8 @@ public class ChangePhoto {
     }
 
     public void changePhoto() {
-        if (!photoList.isEmpty())
+        if (!photoList.isEmpty()) {
             setPhoto((currentPhotoIndex + 1) % photoList.size());
+        }
     }
 }
