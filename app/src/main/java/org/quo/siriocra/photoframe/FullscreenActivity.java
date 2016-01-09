@@ -1,6 +1,7 @@
 package org.quo.siriocra.photoframe;
 
 import android.annotation.SuppressLint;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +13,13 @@ import android.view.View;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class FullscreenActivity extends AppCompatActivity {
-    public static String VERSION = "1.1";
+    public static String VERSION = "1.0";
+
+    private static final long CHECK_FOR_UPDATES_INTERVAL = 1;
+    private static final TimeUnit CHECK_FOR_UPDATES_UNIT = TimeUnit.MINUTES;
 
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
@@ -122,9 +127,12 @@ public class FullscreenActivity extends AppCompatActivity {
         delayedHide(100);
         String url = "http://grand.citxx.ru/application/";
         try {
-            File apkFile = new File(getApplicationInfo().dataDir, "PhotoFrame.apk");
+//            File apkFile = new File(getApplicationInfo().dataDir, "PhotoFrame.apk");
+            File apkFile = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    "PhotoFrame.apk");
             AutoUpdateApp autoUpdate = new AutoUpdateApp(this, url + "version", url + "PhotoFrame.apk", apkFile);
-            executor.execute(autoUpdate);
+            executor.scheduleWithFixedDelay(autoUpdate, 0, CHECK_FOR_UPDATES_INTERVAL, CHECK_FOR_UPDATES_UNIT);
         } catch (MalformedURLException e) {
             // This won't happen
         }
