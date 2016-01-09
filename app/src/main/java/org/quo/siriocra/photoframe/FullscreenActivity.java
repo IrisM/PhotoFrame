@@ -9,29 +9,22 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 public class FullscreenActivity extends AppCompatActivity {
     public static String VERSION = "1.1";
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
+    private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
+    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
+
+    // Some older devices needs a small delay between UI widget updates
+    // and a change of the status and navigation bar.
     private static final int UI_ANIMATION_DELAY = 300;
+
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -127,10 +120,14 @@ public class FullscreenActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
-        AutoUpdateApp autoUpdate = new AutoUpdateApp(this);
         String url = "http://grand.citxx.ru/application/";
-        String path = autoUpdate.doInBackground(url + "version", url + "PhotoFrame.apk");
-        autoUpdate.onPostExecute(path);
+        try {
+            File apkFile = new File(getApplicationInfo().dataDir, "PhotoFrame.apk");
+            AutoUpdateApp autoUpdate = new AutoUpdateApp(this, url + "version", url + "PhotoFrame.apk", apkFile);
+            executor.execute(autoUpdate);
+        } catch (MalformedURLException e) {
+            // This won't happen
+        }
     }
 
     private void toggle() {
